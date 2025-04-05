@@ -1,0 +1,45 @@
+/* Custom Styles */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Thêm transition cho hiệu ứng mượt mà */
+    width: 100%; /* Make sure the width is 100% of the column */
+    padding-bottom: 100%; /* This creates the square aspect ratio (1:1) */
+    position: relative; /* Needed for absolute positioning of the card content */
+    cursor: pointer; /* Thay đổi con trỏ chuột khi hover */
+}
+
+.product-card .card {
+    position: absolute; /* Position the card inside the square container */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Thêm transition cho hiệu ứng mượt mà */
+}
+
+.product-card:hover {
+    transform: translateY(-5px);  
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+    transform: scale(1.05);
+}
+.product-card:hover .card {
+    transform: translateY(-5px);  /* Di chuyển lên trên 5px */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Đổ bóng đậm hơn */
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.add-product-btn {
+    transition: transform 0.2s ease;
+}
+
+.add-product-btn:hover {
+    transform: scale(1.05);
+}
