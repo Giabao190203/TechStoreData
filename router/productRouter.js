@@ -54,7 +54,7 @@ router.post('/add-product', upload.array('images', 10), async (req, res) => {
         }
 
         // Create new product
-        const newProduct = new product({
+        const newProduct = new Product({
             name,
             brand,
             category,
@@ -68,7 +68,7 @@ router.post('/add-product', upload.array('images', 10), async (req, res) => {
         const savedProduct = await newProduct.save();
 
         // res.status(201).json({ message: "Thêm sản phẩm thành công!", product: savedProduct });
-        res.redirect('/products/list', {Product: savedProduct, formatPrice});
+        res.redirect('/products/list');
     } catch (error) {
         console.error("Lỗi khi thêm sản phẩm:", error);
         res.status(500).json({ error: "Lỗi khi thêm sản phẩm" });
@@ -77,12 +77,33 @@ router.post('/add-product', upload.array('images', 10), async (req, res) => {
 
 router.get('/list', async (req, res, next) => {
     try {
-        const products = await Product.find({}).populate('brand').populate('category');
-        res.render('product_list', { products: products, formatPrice });
-    } catch (error) {
+        console.log("Query params:", req.query.category); // Log query parameters for debugging
+        
+        let filter = {};
+        // Nếu có query category và không phải là 'all', lọc theo category
+        if (req.query.category && req.query.category !== 'all') {
+          // Giả sử trong Product, trường category được lưu dưới dạng ObjectId
+          // Và query của bạn sẽ chứa giá trị là category id
+          filter.category = req.query.category;
+        }
+    
+        const products = await Product.find(filter)
+          .populate('brand')
+          .populate('category');
+    
+        // Lấy danh sách tất cả các danh mục để hiển thị trong dropdown
+        const categories = await Category.find();
+    
+        res.render('product_list', { 
+          products: products, 
+          formatPrice, 
+          categories, 
+          selectedCategory: req.query.category || 'all' 
+        });
+      } catch (error) {
         console.error("Lỗi khi lấy danh sách", error);
         res.status(500).json({ error: "Lỗi khi lấy danh sách sản phẩm" });
-    }
+      }
 });
 
 router.post('/upload', upload.single('image'), async (req, res) => {
@@ -104,6 +125,32 @@ router.post('/upload', upload.single('image'), async (req, res) => {
         console.error("Lỗi khi upload ảnh:", error);
         res.status(500).json({ error: "Lỗi khi upload ảnh" });
     }
+});
+
+router.get('/list-phone', async (req, res) => {
+    res.render('list_phone', { formatPrice });
+})
+
+
+router.get('/category/:id/products', async (req, res, next) => {
+    const categoryId = req.params._id;
+
+  try {
+    const category = await Category.findById(categoryId);
+    const products = await Product.find({ categoryId });
+
+    console.log('Category:', category);
+    console.log('Products:', products);
+    
+
+    res.render('list_phone', {
+      category,
+      products
+    });
+  } catch (error) {
+    console.error('Lỗi khi lấy sản phẩm theo danh mục:', error);
+    res.status(500).send('Lỗi server');
+  }
 });
 
 
