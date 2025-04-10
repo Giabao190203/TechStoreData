@@ -2,12 +2,12 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thêm Sản Phẩm Mới</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
@@ -16,7 +16,7 @@
         /* ... (Your existing styles) ... */
         body {
             background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .form-container {
@@ -122,7 +122,7 @@
         }
 
         .save-product {
-            top: 200px
+            top: 200px;
         }
 
         .spec-group {
@@ -136,10 +136,13 @@
             display: block;
             margin-bottom: 5px;
         }
+
         /* New CSS for larger textarea */
         #description {
-            height: 200px; /* Adjust the height as needed */
-            resize: vertical; /* Allow vertical resizing */
+            height: 200px;
+            /* Adjust the height as needed */
+            resize: vertical;
+            /* Allow vertical resizing */
         }
     </style>
 </head>
@@ -147,17 +150,17 @@
 <body>
     <div class="container form-container mt-5 pt-4">
         <h2><i class="fas fa-plus"></i> Thêm Sản Phẩm Mới</h2>
-        <form action="/products/add-product" method="POST" enctype="multipart/form-data">
+        <form action="/products/addProduct" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="name" class="form-label">Tên Sản Phẩm</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name" required />
             </div>
             <div class="mb-3">
                 <label for="brand" class="form-label">Thương hiệu</label>
                 <select class="form-select" id="brand" name="brand" required>
                     <option value="" selected disabled>Chọn thương hiệu</option>
-                    <% if (brands && brands.length> 0) { %>
-                        <% brands.forEach(brand=> { %>
+                    <% if (brands && brands.length> 0) { %> <% brands.forEach(brand=> {
+                            %>
                             <option value="<%= brand._id %>">
                                 <%= brand.name %>
                             </option>
@@ -171,8 +174,7 @@
                 <label for="category" class="form-label">Phân Loại</label>
                 <select class="form-select" id="category" name="category" required>
                     <option value="" selected disabled>Chọn phân loại</option>
-                    <% if (categories && categories.length> 0) { %>
-                        <% categories.forEach(category=> { %>
+                    <% if (categories && categories.length> 0) { %> <% categories.forEach(category=> { %>
                             <option value="<%= category._id %>">
                                 <%= category.name %>
                             </option>
@@ -188,65 +190,109 @@
             </div>
             <div class="mb-3">
                 <label for="images" class="form-label">Hình Ảnh</label>
-                <input type="file" class="form-control" id="images" name="images" multiple required>
+                <input type="file" class="form-control" id="images" name="images" multiple required accept="image/*" />
+                <div id="image-preview" class="mt-3 d-flex flex-wrap gap-2"></div>
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Giá</label>
-                <input type="number" class="form-control" id="price" name="price" required>
+                <input type="number" class="form-control" id="price" name="price" required />
             </div>
             <h2>Thông số kỹ thuật</h2>
             <!-- Trong product_add.ejs -->
-            <div id="specs-container">
-                <!-- Predefined Specification Fields -->
-                <div class="spec-group">
-                    <label for="screen">Màn hình</label>
-                    <input type="text" class="form-control" id="screen" name="specs[screen]">
-                </div>
-                <div class="spec-group">
-                    <label for="cpu">CPU</label>
-                    <input type="text" class="form-control" id="cpu" name="specs[cpu]">
-                </div>
-                <div class="spec-group">
-                    <label for="cpu_speed">Tốc độ CPU</label>
-                    <input type="text" class="form-control" id="cpu_speed" name="specs[cpu_speed]">
-                </div>
-                <div class="spec-group">
-                    <label for="gpu">GPU</label>
-                    <input type="text" class="form-control" id="gpu" name="specs[gpu]">
-                </div>
-                <div class="spec-group">
-                    <label for="ram">RAM</label>
-                    <input type="text" class="form-control" id="ram" name="specs[ram]">
-                </div>
-                <div class="spec-group">
-                    <label for="storage">Bộ nhớ trong</label>
-                    <input type="text" class="form-control" id="storage" name="specs[storage]">
-                </div>
-                <div class="spec-group">
-                    <label for="camera">Camera</label>
-                    <input type="text" class="form-control" id="camera" name="specs[camera]">
-                </div>
-                <div class="spec-group">
-                    <label for="battery">Pin</label>
-                    <input type="text" class="form-control" id="battery" name="specs[pin]">
-                </div>
-                <div class="spec-group">
-                    <label for="maxCharging">Sạc tối đa</label>
-                    <input type="text" class="form-control" id="maxCharging" name="specs[max_charging]">
-                </div>
-                <div class="spec-group">
-                    <label for="screenResolution">Độ phân giải màn hình</label>
-                    <input type="text" class="form-control" id="screenResolution" name="specs[screen_resolution]">
-                </div>
-                <div class="spec-group">
-                    <label for="operatingSystem">Hệ điều hành</label>
-                    <input type="text" class="form-control" id="operatingSystem" name="specs[operating_system]">
-                </div>
-                <!-- Thêm các spec khác tương tự -->
+            <!-- ... other form fields (name, brand, category, description, price, images) ... -->
+
+            <div class="form-group mb-3">
+                <label for="screen_resolution">Hệ điều hành:</label>
+                <input type="text" class="form-control" id="operating_system" name="operating_system" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="cpu">CPU:</label>
+                <input type="text" class="form-control" id="cpu" name="cpu"  />
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="gpu">Số nhân:</label>
+                <input type="text" class="form-control" id="cores" name="cores" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="gpu">Số luồng:</label>
+                <input type="text" class="form-control" id="threads" name="threads" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="cpu_speed">Tốc độ CPU:</label>
+                <input type="text" class="form-control" id="cpu_speed" name="cpu_speed" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ram">Tốc độ tối đa:</label>
+                <input type="text" class="form-control" id="max_speed" name="max_speed"  />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="gpu">GPU:</label>
+                <input type="text" class="form-control" id="gpu" name="gpu" />
             </div>
 
 
+            <div class="form-group mb-3">
+                <label for="ram">RAM:</label>
+                <input type="text" class="form-control" id="ram" name="ram"  />
+            </div>
 
+            <div class="form-group mb-3">
+                <label for="ram">Loại RAM:</label>
+                <input type="text" class="form-control" id="ram_type" name="ram_type"  />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ram">Tốc độ Bus RAM:</label>
+                <input type="text" class="form-control" id="bus_ram" name="bus_ram"  />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ram">Hỗ trợ RAM tối đa:</label>
+                <input type="text" class="form-control" id="ram_max" name="ram_max"  />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="storage">Bộ nhớ trong/Ổ cứng:</label>
+                <input type="text" class="form-control" id="storage" name="storage" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="camera">Camera:</label>
+                <input type="text" class="form-control" id="camera" name="camera" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="screen_resolution">Độ phân giải màn hình:</label>
+                <input type="text" class="form-control" id="screen_resolution" name="screen_resolution" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ram">Độ phủ màu:</label>
+                <input type="text" class="form-control" id="color_coverage" name="color_coverage" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="screen">Màn hình:</label>
+                <input type="text" class="form-control" id="screen" name="screen" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="pin">Pin:</label>
+                <input type="text" class="form-control" id="pin" name="pin" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="max_charging">Sạc tối đa:</label>
+                <input type="text" class="form-control" id="max_charging" name="max_charging" />
+            </div>
+
+            <!-- ... rest of the form ... -->
 
             <button type="submit" class="btn btn-primary mt-3 top-20" id="save-product">
                 <i class="fas fa-save"></i> Lưu Sản Phẩm
@@ -259,8 +305,46 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
     <script>
-        //remove script
+        const imageInput = document.getElementById('images');
+        const imagePreviewContainer = document.getElementById('image-preview');
+
+        imageInput.addEventListener('change', function (event) {
+            // Xóa các ảnh xem trước cũ (nếu có)
+            imagePreviewContainer.innerHTML = '';
+
+            const files = event.target.files; // Lấy danh sách các tệp đã chọn
+
+            if (files) {
+                Array.from(files).forEach(file => {
+                    // Chỉ xử lý nếu là tệp hình ảnh
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            // Tạo thẻ img
+                            const imgElement = document.createElement('img');
+                            imgElement.src = e.target.result;
+                            imgElement.alt = file.name;
+                            // Thêm style cho ảnh xem trước (có thể tùy chỉnh)
+                            imgElement.style.maxWidth = '100px';
+                            imgElement.style.maxHeight = '100px';
+                            imgElement.style.objectFit = 'cover';
+                            imgElement.style.borderRadius = '5px';
+                            imgElement.classList.add('img-thumbnail'); // Thêm class Bootstrap nếu muốn
+
+                            // Thêm ảnh vào container xem trước
+                            imagePreviewContainer.appendChild(imgElement);
+                        }
+
+                        // Đọc tệp dưới dạng Data URL
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
     </script>
+
+
 </body>
 
 </html>

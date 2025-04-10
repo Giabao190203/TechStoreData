@@ -6,11 +6,13 @@ const Category = require('../models/categoryModel');
 const brand = require('../models/brandModel');
 const brandModel = require('../models/brandModel');
 const { default: mongoose } = require('mongoose');
+const productModel = require('../models/productModel');
 
 function formatPrice(price) {
     return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 }
 
+//danh sách sản phẩm (JSON)
 router.get('/api/list', async (req, res, next) => {
     try {
         const products = await Product.find({}) ;
@@ -21,6 +23,7 @@ router.get('/api/list', async (req, res, next) => {
     }
 });
 
+//render trang thêm mới 
 router.get('/add', async (req, res) => {
     try {
         const data = await Category.find();
@@ -32,49 +35,7 @@ router.get('/add', async (req, res) => {
     }
 });
 
-router.post('/add-product', upload.array('images', 10), async (req, res) => {
-    try {
-        // Validate request body
-        const { name, brand, category, description, price, specs } = req.body;
-        if (!name || !brand || !category || !description || !price) {
-            return res.status(400).json({ error: "Vui lòng điền đầy đủ thông tin sản phẩm: name, brand, category, description, price" });
-        }
-
-        // Handle multiple image uploads
-        const imagePromises = req.files.map(file => cloudinary.uploader.upload(file.path));
-        const images = await Promise.all(imagePromises);
-        const imageUrls = images.map(image => image.secure_url);
-
-        // Handle specs array (updated)
-        let productSpecs = [];
-        if (specs && Array.isArray(specs)) {
-            productSpecs = specs.map(spec => ({
-                name: spec // Now, spec itself is the name
-            }));
-        }
-
-        // Create new product
-        const newProduct = new Product({
-            name,
-            brand,
-            category,
-            description,
-            image: imageUrls, // Set the first image as the main image
-            price: parseFloat(price), // Parse price to number
-            specs: specs || {}
-        });
-
-        // Save product to database
-        const savedProduct = await newProduct.save();
-
-        // res.status(201).json({ message: "Thêm sản phẩm thành công!", product: savedProduct });
-        res.redirect('/products/list');
-    } catch (error) {
-        console.error("Lỗi khi thêm sản phẩm:", error);
-        res.status(500).json({ error: "Lỗi khi thêm sản phẩm" });
-    }
-});
-
+//lấy danh sách(render)
 router.get('/list', async (req, res, next) => {
     try {
         console.log("Query params:", req.query.category); // Log query parameters for debugging
@@ -106,51 +67,128 @@ router.get('/list', async (req, res, next) => {
       }
 });
 
-router.post('/upload', upload.single('image'), async (req, res) => {
+
+
+//thêm mới sản phẩm
+router.post('/addProduct',upload.array('images', 10), async (req,res) => {
+    console.log("Thêm sản phẩm mới");
+
     try {
-        if (!req.file) {
-            return res.status(400).send("Chưa tải lên ảnh");
+        // Log the request body for debugging
+        // Validate request body
+        const { name, brand, category, description, price, screen, cpu, cpu_speed, gpu, ram, storage, camera, pin, max_charging, screen_resolution, operating_system, cores, threads, ram_max, ram_type, bus_ram, max_speed, color_coverage } = req.body;
+        if (!name || !brand || !category || !description || !price) {
+            return res.status(400).json({ error: "Vui lòng điền đầy đủ thông tin sản phẩm: name, brand, category, description, price, screen, cpu, ram, storage" });
+        }
+        console.log("Request body:", req.body); // Log request body for debugging
+        
+        // Handle multiple image uploads
+        const imagePromises = req.files.map(file => cloudinary.uploader.upload(file.path));
+        const images = await Promise.all(imagePromises);
+        const imageUrls = images.map(image => image.secure_url);
+        console.log("Uploaded images:", imageUrls); // Log uploaded images for debugging
+        
+
+        // Create new product
+        const newProduct = new Product({
+            name,
+            brand,
+            category,
+            description,
+            images: imageUrls, // Set the first image as the main image
+            price: parseFloat(price), // Parse price to number
+            screen,
+            cpu,
+            cpu_speed,
+            gpu,
+            ram,
+            storage,
+            camera,
+            pin,
+            max_charging,
+            screen_resolution,
+            operating_system,
+            cores,
+            threads,
+            ram_max,
+            ram_type,
+            bus_ram,
+            max_speed,
+            color_coverage
+        });
+
+        // Save product to database
+        const savedProduct = await newProduct.save();
+        console.log("Sản phẩm đã được thêm:", savedProduct);
+        
+        res.redirect('/products/list')
+
+        // res.status(201).json({ message: "Thêm sản phẩm thành công!", product: savedProduct });
+        // res.status(200).json(savedProduct); // Redirect to the product list page after adding a product
+    } catch (error) {
+        console.error("Lỗi khi thêm sản phẩm:", error);
+        res.status(500).json({ error: "Lỗi khi thêm sản phẩm" });
+    }
+    
+})
+
+//lấy chi tiết theo id(api)
+router.get('/api/details/:id', async (req,res) => {
+    try {
+        const productId = req.params.id;
+        if(!mongoose.Types.ObjectId.isValid(productId)){
+            return res.status(400).json({ error: "ID sản phẩm không hợp lệ" });
         }
 
-        const image = await cloudinary.uploader.upload(req.file.path);
+        const product = await productModel.findById(productId).populate('category').populate('brand');
 
-        const uploads = {
-            url: image.secure_url,
-            filename: image.public_id,
-        };
+        if(!product){
+            return res.status(404).json({ error: "Không tìm thấy sản phẩm" });
+        }
 
-        res.status(200).json({ message: "upload thành công", image: uploads });
+        res.json(product);
+
 
     } catch (error) {
-        console.error("Lỗi khi upload ảnh:", error);
-        res.status(500).json({ error: "Lỗi khi upload ảnh" });
+        console.log("Lỗi khi lấy chi tiết sản phẩm:", error);
     }
 });
 
-router.get('/list-phone', async (req, res) => {
-    res.render('list_phone', { formatPrice });
-})
+//lấy danh sách theo id(render)
+router.get('/details/:id', async (req, res) => { // Đường dẫn khớp với href trong list
+    try {
+        const productId = req.params.id;
 
+        // Validate ID
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            console.warn(`Yêu cầu chi tiết sản phẩm với ID không hợp lệ: ${productId}`);
+            return res.status(400).render('error_page', { message: 'ID sản phẩm không hợp lệ.' });
+        }
 
-router.get('/category/:id/products', async (req, res, next) => {
-    const categoryId = req.params._id;
+        // Tìm sản phẩm bằng ID và populate thông tin brand, category
+        // Sử dụng Product thay vì productModel
+        const product = await Product.findById(productId)
+            .populate('brand')
+            .populate('category');
 
-  try {
-    const category = await Category.findById(categoryId);
-    const products = await Product.find({ categoryId });
+        // Kiểm tra nếu không tìm thấy sản phẩm
+        if (!product) {
+            console.warn(`Không tìm thấy sản phẩm với ID: ${productId}`);
+            return res.status(404).render('error_page', { message: 'Không tìm thấy sản phẩm bạn yêu cầu.' });
+        }
 
-    console.log('Category:', category);
-    console.log('Products:', products);
-    
+        // Render trang chi tiết và truyền dữ liệu sản phẩm, hàm formatPrice
+        // Đảm bảo tên view là 'product_detail.ejs' hoặc tên bạn đã tạo
+        res.render('products_details', {
+            product: product,
+            formatPrice: formatPrice // Truyền hàm formatPrice vào view
+        });
 
-    res.render('list_phone', {
-      category,
-      products
-    });
-  } catch (error) {
-    console.error('Lỗi khi lấy sản phẩm theo danh mục:', error);
-    res.status(500).send('Lỗi server');
-  }
+    } catch (error) {
+        console.error("Lỗi khi lấy chi tiết sản phẩm để hiển thị:", error);
+        // Render trang lỗi 500
+        res.status(500).render('error_page', { message: 'Lỗi máy chủ khi tải chi tiết sản phẩm.' });
+    }
 });
 
 

@@ -254,16 +254,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-mobile-alt"></i> Danh sách điện thoại
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/categories">
-                            <i class="fas fa-laptop"></i> Danh sách máy tính
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="/users/list">
                             <i class="fas fa-users"></i> Người Dùng
                         </a>
@@ -297,15 +287,13 @@
             </div>
             <form id="filterForm" action="/products/list" method="GET">
                 <div class="d-flex">
-                    <select class="form-select" name="category"
-                        onchange="document.getElementById('filterForm').submit()">
-                        <option value="all" <%=selectedCategory==='all' ? 'selected' : '' %>>Tất cả</option>
-                        <% categories.forEach(cat=> { %>
-                            <option value="<%= cat._id %>" <%=selectedCategory===cat._id.toString() ? 'selected' : '' %>
-                                >
+                    <select class="form-select" name="category" onchange="document.getElementById('filterForm').submit()">
+                        <option value="all" <%= selectedCategory === 'all' ? 'selected' : '' %>>Tất cả</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat._id %>" <%= selectedCategory === cat._id.toString() ? 'selected' : '' %>>
                                 <%= cat.name %>
                             </option>
-                            <% }); %>
+                        <% }); %>
                     </select>
                 </div>
             </form>
@@ -314,12 +302,12 @@
             <% for (let product of products) { %>
                 <div class="col-md-4 mb-4 animate__animated animate__fadeInUp">
                     <div class="card">
-                        <% if (product.image && product.image.length> 0) { %>
-                            <img src="<%= product.image[0] %>" class="card-img-top" alt="<%= product.name %>">
-                            <% if (product.image.length> 1) { %>
+                        <% if (product.images && product.images.length> 0) { %>
+                            <img src="<%= product.images[0] %>" class="card-img-top" alt="<%= product.name %>">
+                            <% if (product.images.length> 1) { %>
                                 <div class="additional-images">
-                                    <% for (let i=1; i < product.image.length; i++) { %>
-                                        <img src="<%= product.image[i] %>" alt="<%= product.name %>" width="50">
+                                    <% for (let i=1; i < product.images.length; i++) { %>
+                                        <img src="<%= product.images[i] %>" alt="<%= product.name %>" width="50">
                                         <% } %>
                                 </div>
                                 <% } %>
@@ -333,7 +321,7 @@
                                                 </h5>
                                                 <p class="card-text">Giá: <%= formatPrice(product.price) %>
                                                 </p>
-                                                <a href="#" class="btn btn-primary">
+                                                <a href="/products/details/<%= product._id %>" class="btn btn-primary">
                                                     <i class="fas fa-eye"></i> Xem Chi Tiết
                                                 </a>
                                             </div>
@@ -367,6 +355,15 @@
 
     <!-- Custom JS (if needed) -->
     <script src="/public/js/app.js"></script>
+    <script>
+        document.querySelector('select[name="category"]').addEventListener('change', function() {
+            const selectedValue = this.value;
+            
+            if (selectedValue === 'all') {
+                window.location.href = '/products/list'; // Điều hướng đến /products/list mà không có query string
+            }
+        });
+    </script>
 </body>
 
 </html>

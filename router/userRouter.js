@@ -39,6 +39,8 @@ route.post('/login', async (req, res) => { // Change router to route
         // Đăng nhập thành công
         const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
         res.status(200).json({ message: 'Đăng nhập thành công', user, token });
+        console.log('Đăng nhập thành công:', user, token);
+        
 
     } catch (error) {
         console.error('Lỗi đăng nhập:', error);
