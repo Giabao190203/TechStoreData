@@ -8,6 +8,7 @@ const {engine} = require("express-handlebars")
 const productRouter = require('./router/productRouter.js')
 const categoryRouter = require('./router/categoryRouter.js')
 const brandRouter = require('./router/brandRouter.js')
+const cartRouter = require('./router/cartRouter.js')
 
 
 const app = express();
@@ -23,8 +24,9 @@ app.use(express.static("public"));
 
 app.use('/users', userRouter)
 app.use('/products', productRouter)
-app.use('/category', categoryRouter)
-app.use('/brand', brandRouter)
+app.use('/categoies', categoryRouter)
+app.use('/brands', brandRouter)
+app.use('/carts', cartRouter)
 
 // Kết nối MongoDB
 mongoose.connect(process.env.MONGO_URI)

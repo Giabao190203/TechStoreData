@@ -3,7 +3,6 @@ const router = express.Router();
 const Product = require('../models/productModel');
 const { upload, cloudinary } = require('../clouldinary/cloudinaryConfig');
 const Category = require('../models/categoryModel');
-const brand = require('../models/brandModel');
 const brandModel = require('../models/brandModel');
 const { default: mongoose } = require('mongoose');
 const productModel = require('../models/productModel');
